@@ -80,8 +80,51 @@ t/127.0.0.1:18080 after 60000 ms
 平均响应时间大幅度减小，整个系统的性能得到了提高。
 
 ### 使用redis cluster做缓存
+在宿主机搭建了redis集群做缓存和session的存储。需要将redis的保护模式关掉，同时设置为监听局域网内的所有网络。
+在docker容器中的spring项目配置redis集群时设置到连接宿主机的网络。  
+但是在第一次测试的时候发现，时间反而更慢了，可能是机器性能比较弱，加上编写的测试又不是特别强，导致建立缓存的时间占了很多。
+```shell
+================================================================================                                                                       [5/166]
+---- Global Information --------------------------------------------------------                                                                              
+> request count                                       2500 (OK=2500   KO=0     )                                                                              
+> min response time                                      5 (OK=5      KO=-     )                                                                              
+> max response time                                  37502 (OK=37502  KO=-     )                                                                              
+> mean response time                                  7868 (OK=7868   KO=-     )                                                                              
+> std deviation                                      13151 (OK=13151  KO=-     )
+> response time 50th percentile                       1529 (OK=1529   KO=-     )
+> response time 75th percentile                       2762 (OK=2762   KO=-     )
+> response time 95th percentile                      34693 (OK=34693  KO=-     )
+> response time 99th percentile                      37447 (OK=37447  KO=-     )
+> mean requests/sec                                 53.191 (OK=53.191 KO=-     )
+---- Response Time Distribution ------------------------------------------------
+> t < 800 ms                                           828 ( 33%)
+> 800 ms < t < 1200 ms                                 163 (  7%)
+> t > 1200 ms                                         1509 ( 60%)
+> failed                                                 0 (  0%)
+================================================================================
+```
 
-
+再次运行测试，这次缓存已经建立好了，可以发现响应时间变得非常快。
+```shell
+================================================================================                                                                              
+---- Global Information --------------------------------------------------------                                                                              
+> request count                                       2500 (OK=2500   KO=0     )                                                                              
+> min response time                                      3 (OK=3      KO=-     )                                                                              
+> max response time                                   1792 (OK=1792   KO=-     )                                                                              
+> mean response time                                   560 (OK=560    KO=-     )                                                                              
+> std deviation                                        331 (OK=331    KO=-     )
+> response time 50th percentile                        525 (OK=525    KO=-     )
+> response time 75th percentile                        807 (OK=807    KO=-     )
+> response time 95th percentile                       1092 (OK=1092   KO=-     )
+> response time 99th percentile                       1591 (OK=1591   KO=-     )
+> mean requests/sec                                277.778 (OK=277.778 KO=-     )
+---- Response Time Distribution ------------------------------------------------
+> t < 800 ms                                          1845 ( 74%)
+> 800 ms < t < 1200 ms                                 594 ( 24%)
+> t > 1200 ms                                           61 (  2%)
+> failed                                                 0 (  0%)
+================================================================================
+```
 
 The demo shows a web POS system , which replaces the in-memory product db in aw03 with a one backed by 京东.
 
