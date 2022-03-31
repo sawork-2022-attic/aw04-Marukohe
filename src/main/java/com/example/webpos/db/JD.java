@@ -21,7 +21,7 @@ public class JD implements PosDB {
     private List<Product> products = null;
 
     @Override
-    @Cacheable(cacheNames = "jd_products")
+    @Cacheable(value = "jd_products")
     public List<Product> getProducts() {
         try {
             if (products == null)
@@ -33,7 +33,7 @@ public class JD implements PosDB {
     }
 
     @Override
-    @Cacheable(cacheNames = "get_product", key = "#productId")
+    @Cacheable(value = "get_product", key = "#productId")
     public Product getProduct(String productId) {
         for (Product p : getProducts()) {
             if (p.getId().equals(productId)) {
